@@ -11,4 +11,4 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 # Create your views here.
 class GameListView(ListView):
     model:Game
-    
+    template_name=''
