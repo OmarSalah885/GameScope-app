@@ -1,0 +1,31 @@
+from django.db import models
+from django.contrib.auth.models import User
+
+class Game(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    genre = models.CharField(max_length=50)
+    number_of_players = models.IntegerField()
+    platform = models.CharField(max_length=50)
+    release_date = models.DateField()
+    downloads = models.IntegerField(null=True, blank=True)
+    rating_average = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
+    tags = models.TextField(null=True, blank=True)
+    developer = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)   # set once when created
+    updated_at = models.DateTimeField(auto_now=True)       # updated on every save
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class Comment(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
