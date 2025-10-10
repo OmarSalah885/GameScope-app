@@ -45,12 +45,12 @@ def get_queryset(self):
     return queryset
 
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['genres_list'] = Game.objects.values_list('genre', flat=True).distinct()
-        context['platform_list'] = Game.objects.values_list('platform', flat=True).distinct()
-        context['current_sort'] = self.request.GET.get('sort', '-release_date')
-        return context
+def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['genres_list'] = Game.objects.values_list('genre', flat=True).distinct()
+    context['platform_list'] = Game.objects.values_list('platform', flat=True).distinct()
+    context['current_sort'] = self.request.GET.get('sort', '-release_date')
+    return context
 
 
 class GameDetailView(DeleteView):
