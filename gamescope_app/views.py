@@ -11,12 +11,47 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 # GAME VIEWS
 # --------------------------------------------------------------------
 
+from django.views.generic import ListView
+from .models import Game
+
+from django.views.generic import ListView
+from .models import Game
+
+
 class GameListView(ListView):
     model = Game
     template_name = 'game/game_list.html'
-    context_object_name = 'all_games'
-    ordering = ['-release_date']
+    context_object_name = 'games'
     paginate_by = 12
+
+def get_queryset(self):
+    queryset = super().get_queryset()
+    search = self.request.GET.get('search')
+    genre = self.request.GET.get('genre')
+    platform = self.request.GET.get('platform')
+    sort = self.request.GET.get('sort', '-release_date')
+
+    if search:
+        queryset = queryset.filter(name__icontains=search)
+    if genre:
+        queryset = queryset.filter(genre__iexact=genre)
+    if platform:
+        queryset = queryset.filter(platform__iexact=platform)
+
+    valid_sort_fields = ['name', '-name', 'release_date', '-release_date', 'rating_average', '-rating_average']
+    if sort in valid_sort_fields:
+        queryset = queryset.order_by(sort)
+
+    return queryset
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['genres_list'] = Game.objects.values_list('genre', flat=True).distinct()
+        context['platform_list'] = Game.objects.values_list('platform', flat=True).distinct()
+        context['current_sort'] = self.request.GET.get('sort', '-release_date')
+        return context
+
 
 class GameDetailView(DeleteView):
     model:Game
