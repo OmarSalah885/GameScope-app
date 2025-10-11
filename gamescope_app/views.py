@@ -11,52 +11,82 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 # GAME VIEWS
 # --------------------------------------------------------------------
 
-from django.views.generic import ListView
-from .models import Game
-
-from django.views.generic import ListView
-from .models import Game
 
 
 class GameListView(ListView):
     model = Game
     template_name = 'game/game_list.html'
-    context_object_name = 'games'
+    context_object_name = 'all_games'
     paginate_by = 12
 
-def get_queryset(self):
-    queryset = super().get_queryset()
-    search = self.request.GET.get('search')
-    genre = self.request.GET.get('genre')
-    platform = self.request.GET.get('platform')
-    sort = self.request.GET.get('sort', '-release_date')
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        genre = self.request.GET.get('genre')
+        platform = self.request.GET.get('platform')
+        sort = self.request.GET.get('sort', '-release_date')
 
-    if search:
-        queryset = queryset.filter(name__icontains=search)
-    if genre:
-        queryset = queryset.filter(genre__iexact=genre)
-    if platform:
-        queryset = queryset.filter(platform__iexact=platform)
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        if genre:
+            queryset = queryset.filter(genre__iexact=genre)
+        if platform:
+            queryset = queryset.filter(platform__iexact=platform)
 
-    valid_sort_fields = ['name', '-name', 'release_date', '-release_date', 'rating_average', '-rating_average']
-    if sort in valid_sort_fields:
-        queryset = queryset.order_by(sort)
+        valid_sort_fields = [
+            'name', '-name', 'release_date', '-release_date',
+            'rating_average', '-rating_average'
+        ]
+        if sort in valid_sort_fields:
+            queryset = queryset.order_by(sort)
 
-    return queryset
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        valid_sort_fields = {
+            'name': 'Name (A–Z)',
+            '-name': 'Name (Z–A)',
+            'release_date': 'Oldest First',
+            '-release_date': 'Newest First',
+            'rating_average': 'Lowest Rated',
+            '-rating_average': 'Highest Rated',
+        }
+
+        context["genre_list"] = Game.objects.values_list('genre', flat=True).distinct()
+        context["platform_list"] = Game.objects.values_list('platform', flat=True).distinct()
+        context["current_sort"] = self.request.GET.get('sort', '-release_date')
+        context["valid_sort_fields"] = valid_sort_fields
+
+        
+        context["current_search"] = self.request.GET.get('search', '')
+        context["current_genre"] = self.request.GET.get('genre', '')
+        context["current_platform"] = self.request.GET.get('platform', '')
+
+        return context
 
 
-def get_context_data(self, **kwargs):
-    context = super().get_context_data(**kwargs)
-    context['genres_list'] = Game.objects.values_list('genre', flat=True).distinct()
-    context['platform_list'] = Game.objects.values_list('platform', flat=True).distinct()
-    context['current_sort'] = self.request.GET.get('sort', '-release_date')
-    return context
+class GameDetailView(DetailView):
+    model = Game
+    template_name = 'game/game_details.html'
+    context_object_name = 'found_game'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        game = self.get_object()
+        reviews = Review.objects.filter(game=game).order_by('-created_at').select_related('user')
 
-class GameDetailView(DeleteView):
-    model:Game
-    template_name='game/game_details.html'
-    context_object_name='found_game'
+        reviews_with_comments = []
+        for review in reviews:
+            comments = Comment.objects.filter(review=review).order_by('created_at').select_related('user')
+            reviews_with_comments.append({
+                'review': review,
+                'comments': comments
+            })
+
+        context["reviews_with_comments"] = reviews_with_comments
+        return context
+
 
 
 

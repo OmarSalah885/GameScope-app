@@ -12,8 +12,8 @@ class Game(models.Model):
     rating_average = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     tags = models.TextField(null=True, blank=True)
     developer = models.CharField(max_length=100, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)   # set once when created
-    updated_at = models.DateTimeField(auto_now=True)       # updated on every save
+    created_at = models.DateTimeField(auto_now_add=True)   
+    updated_at = models.DateTimeField(auto_now=True)       
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
