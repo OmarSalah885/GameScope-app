@@ -8,6 +8,13 @@ from django.contrib.auth.models import User # built in User model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+
+
+def home(request):
+    featured_games = Game.objects.order_by('-rating_average')[:5]
+    return render(request, 'home.html', {'featured_games': featured_games})
+
+
 # GAME VIEWS
 # --------------------------------------------------------------------
 
