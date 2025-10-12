@@ -6,7 +6,7 @@
     <title>{% block title %}Game Scope{% endblock title %}</title>
 
     <!-- CSS / JS includes -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/style.css' %}"> {% endcomment %}
 
     {% block head %}
     {% endblock head %}
@@ -15,8 +15,9 @@
     <header>
         <h1><a href="{% url 'home' %}">Game Scope</a></h1>
         <nav>
+            <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'game_list' %}">All Games</a>
-            <a href="{% url 'about' %}">About</a>
+            {% comment %} <a href="{% url 'about' %}">About</a> {% endcomment %}
         </nav>
     </header>
 

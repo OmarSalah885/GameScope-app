@@ -1,25 +1,16 @@
-from django.shortcuts import render,redirect
-from django.urls import reverse
-from django.urls import reverse_lazy
-from .models import Game,Review,Comment
-from .forms import GameForm ,ReviewForm,CommentForm
-from django.contrib.auth.forms import UserCreationForm #form to create  new user
-from django.contrib.auth.models import User # built in User model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Game, Review, Comment
+from .forms import GameForm, ReviewForm, CommentForm
 
 def home(request):
     featured_games = Game.objects.order_by('-rating_average')[:5]
     return render(request, 'home.html', {'featured_games': featured_games})
 
-
 # GAME VIEWS
 # --------------------------------------------------------------------
-
-
-
 class GameListView(ListView):
     model = Game
     template_name = 'game/game_list.html'
@@ -46,8 +37,21 @@ class GameListView(ListView):
         ]
         if sort in valid_sort_fields:
             queryset = queryset.order_by(sort)
+        else:
+            queryset = queryset.order_by('-release_date')  # Default ordering
 
+        print(f"Queryset count: {queryset.count()}")  # Debug line
         return queryset
+
+    def get_paginate_by(self, queryset):
+        print(f"get_paginate_by returned: {self.paginate_by}")
+        return self.paginate_by
+
+    def paginate_queryset(self, queryset, page_size):
+        print(f"paginate_queryset called with page_size={page_size}")
+        paginator, page, queryset, is_paginated = super().paginate_queryset(queryset, page_size)
+        print(f"paginate_queryset returned: paginator={type(paginator)}, page={type(page)}, is_paginated={is_paginated}")
+        return paginator, page, queryset, is_paginated
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -60,18 +64,37 @@ class GameListView(ListView):
             '-rating_average': 'Highest Rated',
         }
 
+        # Explicitly set paginated object if pagination is enabled
+        if self.paginate_by:
+            paginator, page, queryset, is_paginated = self.paginate_queryset(self.get_queryset(), self.paginate_by)
+            context[self.context_object_name] = page
+
         context["genre_list"] = Game.objects.values_list('genre', flat=True).distinct()
         context["platform_list"] = Game.objects.values_list('platform', flat=True).distinct()
         context["current_sort"] = self.request.GET.get('sort', '-release_date')
         context["valid_sort_fields"] = valid_sort_fields
-
-        
         context["current_search"] = self.request.GET.get('search', '')
         context["current_genre"] = self.request.GET.get('genre', '')
         context["current_platform"] = self.request.GET.get('platform', '')
 
-        return context
+        # Prepare query string without 'page'
+        querydict = self.request.GET.copy()
+        querydict.pop('page', None)
+        context["query_string"] = querydict.urlencode()
 
+        # Debug pagination info
+        print(f"Paginate by: {self.paginate_by}")
+        print(f"Context['all_games'] type: {type(context['all_games'])}")
+        try:
+            print(f"Paginator count: {context['all_games'].paginator.count}")
+            print(f"Has next: {context['all_games'].has_next()}")
+            print(f"Has previous: {context['all_games'].has_previous()}")
+            print(f"Current page: {context['all_games'].number}")
+            print(f"Total pages: {context['all_games'].paginator.num_pages}")
+        except AttributeError as e:
+            print(f"Error accessing pagination attributes: {e}")
+
+        return context
 
 class GameDetailView(DetailView):
     model = Game
@@ -94,69 +117,88 @@ class GameDetailView(DetailView):
         context["reviews_with_comments"] = reviews_with_comments
         return context
 
-
-
-
-
-# REVIEWS VIEWS
+# REVIEW VIEWS
 # --------------------------------------------------------------------
 class ReviewListView(ListView):
-    model:Game
-    template_name='game/game_list.html'
-    context_object_name='all_games'
+    model = Review
+    template_name = 'review/review_list.html'
+    context_object_name = 'all_reviews'
 
-class ReviewDetailView(DeleteView):
-    model:Game
-    template_name='game/game_details.html'
-    context_object_name='found_game'
+    def get_queryset(self):
+        return super().get_queryset().select_related('game', 'user').order_by('-created_at')
 
+class ReviewDetailView(DetailView):
+    model = Review
+    template_name = 'review/review_detail.html'
+    context_object_name = 'found_review'
 
-class ReviewCreateView(CreateView):
-    model:Game
-    form_class=GameForm
-    template_name='game/game_form.html'
-    success_url=reverse_lazy('game_list')
+class ReviewCreateView(LoginRequiredMixin, CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'review/review_form.html'
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.game = Game.objects.get(pk=self.kwargs['game_id'])
+        return super().form_valid(form)
 
-class ReviewUpdateView(UpdateView):
-    model:Game
-    form_class=GameForm
-    template_name='game/game_form.html'
-    success_url=reverse_lazy('game_list')
+    def get_success_url(self):
+        return reverse('game_detail', kwargs={'pk': self.kwargs['game_id']})
 
+class ReviewUpdateView(LoginRequiredMixin, UpdateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'review/review_form.html'
 
-class ReviewDeleteView(DeleteView):
-    model:Game
-    success_url=reverse_lazy('game_list')
+    def get_success_url(self):
+        return reverse('game_detail', kwargs={'pk': self.object.game.pk})
+
+class ReviewDeleteView(LoginRequiredMixin, DeleteView):
+    model = Review
+    template_name = 'review/review_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('game_detail', kwargs={'pk': self.object.game.pk})
 
 # COMMENT VIEWS
 # --------------------------------------------------------------------
-
 class CommentListView(ListView):
-    model:Game
-    template_name='game/game_list.html'
-    context_object_name='all_games'
+    model = Comment
+    template_name = 'comment/comment_list.html'
+    context_object_name = 'all_comments'
 
-class CommentDetailView(DeleteView):
-    model:Game
-    template_name='game/game_details.html'
-    context_object_name='found_game'
+    def get_queryset(self):
+        return super().get_queryset().select_related('review', 'user').order_by('-created_at')
 
+class CommentDetailView(DetailView):
+    model = Comment
+    template_name = 'comment/comment_detail.html'
+    context_object_name = 'found_comment'
 
-class CommentCreateView(CreateView):
-    model:Game
-    form_class=GameForm
-    template_name='game/game_form.html'
-    success_url=reverse_lazy('game_list')
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'comment/comment_form.html'
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.review = Review.objects.get(pk=self.kwargs['review_id'])
+        return super().form_valid(form)
 
-class CommentUpdateView(UpdateView):
-    model:Game
-    form_class=GameForm
-    template_name='game/game_form.html'
-    success_url=reverse_lazy('game_list')
+    def get_success_url(self):
+        return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})
 
+class CommentUpdateView(LoginRequiredMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'comment/comment_form.html'
 
-class CommentDeleteView(DeleteView):
-    model:Game
-    success_url=reverse_lazy('game_list')
+    def get_success_url(self):
+        return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})
+
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
+    model = Comment
+    template_name = 'comment/comment_confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})

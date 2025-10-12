@@ -12,6 +12,7 @@ class Game(models.Model):
     rating_average = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     tags = models.TextField(null=True, blank=True)
     developer = models.CharField(max_length=100, null=True, blank=True)
+    cover_image = models.ImageField(upload_to='games/covers/', null=True, blank=True, help_text='Upload a cover image for the game (e.g., poster).')
     created_at = models.DateTimeField(auto_now_add=True)   
     updated_at = models.DateTimeField(auto_now=True)       
 

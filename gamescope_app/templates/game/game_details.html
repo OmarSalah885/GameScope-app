@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ found_game.name }}</h1>
+    {% if found_game.cover_image %}
+        <img src="{{ found_game.cover_image.url }}" alt="{{ found_game.name }}" style="max-width: 300px;">
+    {% else %}
+        <p>No cover image available.</p>
+    {% endif %}
+    <p><strong>Genre:</strong> {{ found_game.genre }}</p>
+    <p><strong>Platform:</strong> {{ found_game.platform }}</p>
+    <p><strong>Release Date:</strong> {{ found_game.release_date }}</p>
+    <p><strong>Description:</strong> {{ found_game.description }}</p>
+    <p><strong>Number of Players:</strong> {{ found_game.number_of_players }}</p>
+    <p><strong>Downloads:</strong> {{ found_game.downloads|default_if_none:"N/A" }}</p>
+    <p><strong>Rating Average:</strong> {{ found_game.rating_average|default_if_none:"N/A" }}</p>
+    <p><strong>Tags:</strong> {{ found_game.tags|default_if_none:"N/A" }}</p>
+    <p><strong>Developer:</strong> {{ found_game.developer|default_if_none:"N/A" }}</p>
+    <h2>Reviews</h2>
+    {% for review_with_comments in reviews_with_comments %}
+        <div>
+            <p><strong>{{ review_with_comments.review.user.username }}</strong>: {{ review_with_comments.review.rating }}/5</p>
+            <p>{{ review_with_comments.review.content }}</p>
+            <h3>Comments</h3>
+            {% for comment in review_with_comments.comments %}
+                <p>{{ comment.user.username }}: {{ comment.text }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <a href="{% url 'review_create' game_id=found_game.pk %}">Add Review</a>
+{% endblock %}
