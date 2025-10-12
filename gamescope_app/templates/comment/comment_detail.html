@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Comment Detail{% endblock %}
+
+{% block content %}
+    <h1>Comment on Review for {{ found_comment.review.game.name }}</h1>
+    <p><strong>User:</strong> {{ found_comment.user.username }}</p>
+    <p><strong>Text:</strong> {{ found_comment.text }}</p>
+    <p><strong>Created:</strong> {{ found_comment.created_at }}</p>
+    {% if user == found_comment.user %}
+        <a href="{% url 'comment_update' found_comment.pk %}">Edit</a>
+        <a href="{% url 'comment_delete' found_comment.pk %}">Delete</a>
+    {% endif %}
+{% endblock %}

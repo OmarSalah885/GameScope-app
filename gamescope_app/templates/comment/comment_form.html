@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if object %}Edit{% else %}Add{% endif %} Comment{% endblock %}
+
+{% block content %}
+    <h1>
+        {% if object %}
+            Edit Comment
+        {% elif parent_comment %}
+            Add Reply to {{ parent_comment.user.username }}'s Comment
+        {% else %}
+            Add Comment on Review for {{ review.game.name }}
+        {% endif %}
+    </h1>
+    <form method="post">
+        {% csrf_token %}
+        {% if parent_comment %}
+            <input type="hidden" name="parent_id" value="{{ parent_comment.pk }}">
+        {% endif %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'game_detail' pk=review.game.pk %}">Cancel</a>
+{% endblock %}

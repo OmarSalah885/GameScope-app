@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Game, Review, Comment
-from .forms import GameForm, ReviewForm, CommentForm
+from .forms import ReviewForm, CommentForm
 
 def home(request):
     featured_games = Game.objects.order_by('-rating_average')[:5]
@@ -108,7 +108,7 @@ class GameDetailView(DetailView):
 
         reviews_with_comments = []
         for review in reviews:
-            comments = Comment.objects.filter(review=review).order_by('created_at').select_related('user')
+            comments = Comment.objects.filter(review=review, parent__isnull=True).order_by('created_at').select_related('user')
             reviews_with_comments.append({
                 'review': review,
                 'comments': comments
@@ -142,20 +142,36 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
         form.instance.game = Game.objects.get(pk=self.kwargs['game_id'])
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['game'] = Game.objects.get(pk=self.kwargs['game_id'])
+        return context
+
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.kwargs['game_id']})
 
-class ReviewUpdateView(LoginRequiredMixin, UpdateView):
+class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Review
     form_class = ReviewForm
     template_name = 'review/review_form.html'
 
+    def test_func(self):
+        return self.get_object().user == self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['game'] = self.get_object().game
+        return context
+
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.object.game.pk})
 
-class ReviewDeleteView(LoginRequiredMixin, DeleteView):
+class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Review
     template_name = 'review/review_confirm_delete.html'
+
+    def test_func(self):
+        return self.get_object().user == self.request.user
 
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.object.game.pk})
@@ -183,22 +199,44 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.review = Review.objects.get(pk=self.kwargs['review_id'])
+        parent_id = self.request.POST.get('parent_id')
+        if parent_id:
+            form.instance.parent = Comment.objects.get(pk=parent_id)
         return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['review'] = Review.objects.get(pk=self.kwargs['review_id'])
+        parent_id = self.request.GET.get('parent_id')
+        if parent_id:
+            context['parent_comment'] = Comment.objects.get(pk=parent_id)
+        return context
 
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})
 
-class CommentUpdateView(LoginRequiredMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'comment/comment_form.html'
 
+    def test_func(self):
+        return self.get_object().user == self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['review'] = self.get_object().review
+        return context
+
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})
 
-class CommentDeleteView(LoginRequiredMixin, DeleteView):
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
     template_name = 'comment/comment_confirm_delete.html'
+
+    def test_func(self):
+        return self.get_object().user == self.request.user
 
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})

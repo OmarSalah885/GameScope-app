@@ -21,11 +21,20 @@
         <div>
             <p><strong>{{ review_with_comments.review.user.username }}</strong>: {{ review_with_comments.review.rating }}/5</p>
             <p>{{ review_with_comments.review.content }}</p>
+            {% if user.is_authenticated and user == review_with_comments.review.user %}
+                <a href="{% url 'review_update' review_with_comments.review.pk %}">Edit</a>
+                <a href="{% url 'review_delete' review_with_comments.review.pk %}">Delete</a>
+            {% endif %}
             <h3>Comments</h3>
             {% for comment in review_with_comments.comments %}
-                <p>{{ comment.user.username }}: {{ comment.text }}</p>
+                {% include 'comment/comment_tree.html' with comment=comment level=0 %}
             {% endfor %}
+            {% if user.is_authenticated %}
+                <a href="{% url 'comment_create' review_id=review_with_comments.review.pk %}">Add Comment</a>
+            {% endif %}
         </div>
     {% endfor %}
-    <a href="{% url 'review_create' game_id=found_game.pk %}">Add Review</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'review_create' game_id=found_game.pk %}">Add Review</a>
+    {% endif %}
 {% endblock %}

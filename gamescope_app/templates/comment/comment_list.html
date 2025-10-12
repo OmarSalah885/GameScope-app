@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}All Comments{% endblock %}
+
+{% block content %}
+    <h1>All Comments</h1>
+    <ul>
+        {% for comment in all_comments %}
+            <li>
+                <a href="{% url 'comment_detail' comment.pk %}">{{ comment.review.game.name }} - Comment by {{ comment.user.username }}</a>
+            </li>
+        {% empty %}
+            <li>No comments found.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
