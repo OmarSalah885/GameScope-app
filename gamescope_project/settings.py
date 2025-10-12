@@ -139,3 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Define the base directory for media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'  # Where uploaded files are stored (e.g., project_root/media/)
+
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login'
