@@ -4,10 +4,10 @@
 
 {% block content %}
     <h1>Delete Review</h1>
-    <p>Are you sure you want to delete this review for "{{ object.game.name }}"?</p>
+    <p>Are you sure you want to delete this review for "{{ review.game.name }}"?</p>
     <form method="post">
         {% csrf_token %}
         <button type="submit">Yes, Delete</button>
     </form>
-    <a href="{% url 'game_detail' pk=object.game.pk %}">Cancel</a>
+    <a href="{% url 'game_detail' pk=review.game.pk %}">Cancel</a>
 {% endblock %}

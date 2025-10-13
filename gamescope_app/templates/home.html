@@ -1,14 +1,15 @@
 {% extends "base.html" %}
-{% block title %}
-Home Page
-{% endblock title %}
-
-{% block head %}
-
-
-{% endblock head %}
-
+{% block title %}Home Page{% endblock title %}
 
 {% block content %}
-
+<h2>Featured Games</h2>
+{% if featured_games %}
+    <ul>
+    {% for game in featured_games %}
+        <li><a href="{% url 'game_detail' pk=game.pk %}">{{ game.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No featured games available.</p>
+{% endif %}
 {% endblock content %}

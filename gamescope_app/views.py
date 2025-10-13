@@ -7,7 +7,6 @@ from .forms import ReviewForm, CommentForm
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import FormView
 
 
 def home(request):
@@ -102,6 +101,8 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
     model = Review
     form_class = ReviewForm
     template_name = 'review/review_form.html'
+    context_object_name = 'review'
+
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -125,6 +126,8 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Review
     form_class = ReviewForm
     template_name = 'review/review_form.html'
+    context_object_name = 'review'
+
 
     def test_func(self):
         return self.get_object().user == self.request.user
@@ -145,6 +148,8 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Review
     template_name = 'review/review_confirm_delete.html'
+    context_object_name = 'review'
+
 
     def test_func(self):
         return self.get_object().user == self.request.user
@@ -176,6 +181,8 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'comment/comment_form.html'
+    context_object_name = 'comment'
+
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -202,6 +209,8 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'comment/comment_form.html'
+    context_object_name = 'comment'
+    
 
     def test_func(self):
         return self.get_object().user == self.request.user
@@ -210,6 +219,11 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['review'] = self.get_object().review
         return context
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Comment updated successfully!")
+        return response
 
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})
@@ -217,20 +231,29 @@ class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
     template_name = 'comment/comment_confirm_delete.html'
+    context_object_name = 'comment'
+    
 
     def test_func(self):
         return self.get_object().user == self.request.user
 
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        messages.success(self.request, "Comment deleted successfully!")
+        return response
+    
     def get_success_url(self):
         return reverse('game_detail', kwargs={'pk': self.object.review.game.pk})
+    
     
 
 
 class SignUpView(CreateView):
     template_name = "registration/signup.html"
     form_class = UserCreationForm
-    success_url = reverse_lazy("login")
-
+    success_url = reverse_lazy("home")
+    
     def form_valid(self, form):
         messages.success(self.request, "Account created successfully! You can now log in.")
         return super().form_valid(form)
+

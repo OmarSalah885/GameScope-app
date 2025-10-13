@@ -1,13 +1,20 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if object %}Edit{% else %}Add{% endif %} Review{% endblock %}
+{% block title %}
+    {% if review %}
+        Edit
+    {% else %}
+        Add
+    {% endif %} 
+    Review
+{% endblock %}
 
 {% block content %}
-    <h1>{% if object %}Edit{% else %}Add{% endif %} Review for {{ game.name }}</h1>
+    <h1>{% if review %}Edit{% else %}Add{% endif %} Review for {{ game.name }}</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Save</button>
     </form>
-    <a href="{% url 'game_detail' pk=game.pk %}">Cancel</a> <!-- Changed game_id to pk -->
+    <a href="{% url 'game_detail' pk=game.pk %}">Cancel</a>
 {% endblock %}

@@ -9,7 +9,7 @@
     <p><strong>Content:</strong> {{ found_review.content }}</p>
     <p><strong>Created:</strong> {{ found_review.created_at }}</p>
     {% if user == found_review.user %}
-        <a href="{% url 'review_update' found_review.pk %}">Edit</a>
+        <a href="{% url 'review_edit' found_review.pk %}">Edit</a>
         <a href="{% url 'review_delete' found_review.pk %}">Delete</a>
     {% endif %}
 {% endblock %}
