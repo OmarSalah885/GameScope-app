@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.urls import reverse,reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -7,11 +7,30 @@ from .forms import ReviewForm, CommentForm
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
+from django.views.generic import TemplateView
+from django.utils import timezone
 
 
-def home(request):
-    featured_games = Game.objects.order_by('-rating_average')[:5]
-    return render(request, 'home.html', {'featured_games': featured_games})
+class HomePageView(TemplateView):
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Top 5 featured games
+        context['featured_games'] = Game.objects.order_by('rating_average')[:5]
+        
+        # Top-rated games (next 10 after featured)
+        featured_ids = [game.id for game in context['featured_games']]
+        context['top_rated_games'] = Game.objects.exclude(id__in=featured_ids).order_by('-rating_average')[:3]
+        
+        # Current date and time for news section
+        now = timezone.localtime(timezone.now())
+        context['current_date'] = now.date()
+        context['current_time'] = now.strftime("%H:%M")
+        
+        return context
+
 
 # GAME VIEWS
 class GameListView(ListView):

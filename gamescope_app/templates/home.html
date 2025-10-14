@@ -1,15 +1,89 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Home Page{% endblock title %}
 
 {% block content %}
-<h2>Featured Games</h2>
-{% if featured_games %}
-    <ul>
-    {% for game in featured_games %}
-        <li><a href="{% url 'game_detail' pk=game.pk %}">{{ game.name }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No featured games available.</p>
-{% endif %}
+<div class="hero-section">
+    <img src="{% static 'images/px-red.jpg' %}" alt="pc" class="hero-image">
+    <div class="hero-overlay">
+    <h1>
+        Welcome{% if user.is_authenticated %}, {{ user.username }}{% endif %} to Game Scope
+    </h1>
+    <p>Discover a world of exciting games across all genres and platforms. Join our community to rate, review, and explore!</p>
+    <a href="{% url 'game_list' %}" class="explore-button">Explore Games</a>
+</div>
+
+</div>
+
+<h2 class="section-header">Featured Games</h2>
+<div class="game-featured">
+    {% if featured_games %}
+        {% for game in featured_games|slice:":5" %}
+            <div class="game-card">
+                {% if game.cover_image %}
+                    <img src="{{ game.cover_image.url }}" alt="{{ game.name }}" class="game-image">
+                {% else %}
+                    <div class="game-image-placeholder">[No Image]</div>
+                {% endif %}
+                <div class="game-info">
+                    <a href="{% url 'game_detail' pk=game.pk %}">{{ game.name }}</a>
+                    <p>Genre: {{ game.genre|default:"N/A" }}</p>
+                    <p>Release: {{ game.release_date|date:"Y-m-d"|default:"TBA" }}</p>
+                    <p>Rating: ⭐ {{ game.rating_average|default:"N/A" }}</p>
+                    <p class="game-desc">{{ game.description|default:"No description available." }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No featured games available.</p>
+    {% endif %}
+</div>
+
+<h2 class="section-header">Latest News</h2>
+<div class="news-section">
+    <p><strong>{{ current_date|date:"F d, Y" }} at {{ current_time }}:</strong> We're thrilled to announce new game additions this week! Stay tuned for updates.</p>
+    <a href="{% url 'game_list' %}">View All Updates</a>
+</div>
+
+<h2 class="section-header">Top Rated Games</h2>
+<div class="game-scroll-container">
+    {% if top_rated_games %}
+        {% for game in top_rated_games %}
+            <div class="game-card">
+                {% if game.cover_image %}
+                    <img src="{{ game.cover_image.url }}" alt="{{ game.name }}" class="game-image">
+                {% else %}
+                    <div class="game-image-placeholder">[No Image]</div>
+                {% endif %}
+                <div class="game-info">
+                    <a href="{% url 'game_detail' pk=game.pk %}">{{ game.name }}</a>
+                    <p>Genre: {{ game.genre|default:"N/A" }}</p>
+                    <p>Release: {{ game.release_date|date:"Y-m-d"|default:"TBA" }}</p>
+                    <p>Rating: ⭐ {{ game.rating_average|default:"N/A" }}</p>
+                    <p class="game-desc">{{ game.description|default:"No description available." }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No top-rated games available.</p>
+    {% endif %}
+</div>
+
+<!-- About Me Section -->
+<div id="about" class="about-section">
+    <div class="about-content">
+        <div class="about-text">
+            <h2>About Me</h2>
+            <h3>Omar Salah</h3>
+            <p>Hey there! I’m the creator of <strong>Game Scope</strong> — a passionate gamer and developer who loves exploring, reviewing, and building engaging experiences for the gaming community.</p>
+            <p>This platform was designed to connect players, highlight amazing games, and celebrate the art of gaming across all genres. Thanks for being part of this journey!</p>
+        </div>
+        <img src="{% static 'images/about_me.jpeg' %}" alt="About Me" class="about-image">
+    </div>
+</div>
+
+<div class="call-to-action">
+    <p>Ready to dive in? Sign up or log in to start exploring and sharing your favorite games!</p>
+    <a href="{% url 'signup' %}">Sign Up</a> | <a href="{% url 'login' %}">Login</a>
+</div>
 {% endblock content %}

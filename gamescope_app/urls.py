@@ -3,9 +3,9 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
-from .views import SignUpView
+from .views import SignUpView,HomePageView
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', HomePageView.as_view(), name='home'),
     path('games/', views.GameListView.as_view(), name='game_list'),
     path('games/<int:pk>/', views.GameDetailView.as_view(), name='game_detail'),
     # Review URLs
