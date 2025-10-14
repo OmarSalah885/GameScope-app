@@ -149,7 +149,7 @@ main {
     min-width: 260px;
     height: 430px;
     background: linear-gradient(180deg, #2a0000, #0f0f0f);
-    border-radius: 16px;
+    border-radius: 5px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -334,6 +334,46 @@ footer {
     width: 100%;
     background: linear-gradient(90deg, #1C1C1C, #A91B0D);
     margin-top: auto;
+}
+/* Messages (error/success/info) */
+.messages {
+    margin-bottom: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: left;
+    max-width: 400px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.messages li {
+    list-style: none;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+}
+
+/* Error messages */
+.messages li.error {
+    background-color: rgba(255, 69, 0, 0.2);
+    color: #FF4500;
+    border-left: 4px solid #FF4500;
+}
+
+/* Success messages */
+.messages li.success {
+    background-color: rgba(50, 205, 50, 0.2);
+    color: #32CD32;
+    border-left: 4px solid #32CD32;
+}
+
+/* Info messages */
+.messages li.info {
+    background-color: rgba(30, 144, 255, 0.2);
+    color: #1E90FF;
+    border-left: 4px solid #1E90FF;
 }
 
 @media (max-width: 600px) {

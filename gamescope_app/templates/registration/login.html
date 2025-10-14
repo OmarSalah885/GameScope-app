@@ -1,15 +1,33 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block title %}
+        Login
+{% endblock title %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/registration.css' %}">
+{% endblock head %}
 {% block content %}
-<div>
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-    <p>
-        Don’t have an account?
-        <a href="{% url 'signup' %}">Sign Up</a>
-    </p>
+<div class="registration-container">
+    <div class="registration-card">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <h2>Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+        <p>
+            Don’t have an account? <a href="{% url 'signup' %}">Sign Up</a>
+        </p>
+    </div>
 </div>
+
+
 {% endblock %}
