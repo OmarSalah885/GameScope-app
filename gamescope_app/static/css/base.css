@@ -49,6 +49,25 @@ header h1 a {
     font-weight: bold;
     text-shadow: 0 0 10px var(--light-peach), 0 0 20px var(--text-shadow);
 }
+.header-search {
+    display: flex;
+    gap: 8px;
+}
+
+.header-search input {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.header-search button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background-color: #FF4500;
+    color: #fff;
+    cursor: pointer;
+}
 
 nav {
     display: flex;

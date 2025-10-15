@@ -81,9 +81,11 @@
         <img src="{% static 'images/about_me.jpeg' %}" alt="About Me" class="about-image">
     </div>
 </div>
-
+{% if not user.is_authenticated %}
 <div class="call-to-action">
     <p>Ready to dive in? Sign up or log in to start exploring and sharing your favorite games!</p>
     <a href="{% url 'signup' %}">Sign Up</a> | <a href="{% url 'login' %}">Login</a>
 </div>
+{% endif %}
+
 {% endblock content %}

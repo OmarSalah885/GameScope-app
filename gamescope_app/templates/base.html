@@ -12,7 +12,12 @@
 <body>
     <header>
         <h1><a href="{% url 'home' %}">Game Scope</a></h1>
+        
         <nav>
+            <form method="get" action="{% url 'game_list' %}" class="header-search">
+            <input type="text" name="search" placeholder="Search games..." value="{{ current_search }}">   
+                <button type="submit">Search</button>
+            </form>
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'game_list' %}">All Games</a>
             <a href="{% url 'home' %}#about">About</a>
