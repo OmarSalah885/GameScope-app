@@ -47,9 +47,18 @@ GameScope is a web-based platform designed to let users explore detailed game in
 
 ---
 
+## 📝 User Stories
+- **View games:** As a user, I want to view a list of available games so that I can choose which game to explore or review.  
+- **Search games:** As a user, I want to search for a specific game by name or genre so that I can quickly find the game I’m interested in.  
+- **Game details:** As a user, I want to view detailed information about a game so that I can learn more about its features and release details.  
+- **Write reviews:** As a user, I want to write a review for a game so that I can share my personal opinion and experience with others.  
+- **Read reviews:** As a user, I want to read reviews written by other users so that I can see different perspectives about the game.  
+- **Comment on reviews:** As a user, I want to comment on other users’ reviews so that I can discuss and exchange opinions about the games.
+
+---
+
 ## 🚀 Getting Started
 - **Deployed App**: [Visit GameScope Live](https://example.com/gamescope) *(Replace with your deployed URL)*  
-- **Planning Materials**: [ERD and User Stories](https://trello.com/b/example/gamescope-planning) *(Replace with your Trello or planning link)*  
 
 ---
 
