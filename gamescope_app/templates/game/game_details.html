@@ -5,6 +5,13 @@
 {% endblock head %}
 
 {% block content %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <div class="game-details">
         <div class="details-left">
             <h1>{{ found_game.name }}</h1>
