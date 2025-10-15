@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/games.css' %}">
+{% endblock head %}
+
+{% block content %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="game-details">
+        <div class="details-left">
+            <h1>{{ found_game.name }}</h1>
+            <p><strong>Genre:</strong> {{ found_game.genre }}</p>
+            <p><strong>Platform:</strong> {{ found_game.platform }}</p>
+            <p><strong>Release Date:</strong> {{ found_game.release_date }}</p>
+            <p><strong>Description:</strong> {{ found_game.description }}</p>
+            <p><strong>Number of Players:</strong> {{ found_game.number_of_players }}</p>
+            <p><strong>Downloads:</strong> {{ found_game.downloads|default_if_none:"N/A" }}</p>
+            <p><strong>Rating Average:</strong> {{ found_game.rating_average|default_if_none:"N/A" }}</p>
+            <p><strong>Tags:</strong> {{ found_game.tags|default_if_none:"N/A" }}</p>
+            <p><strong>Developer:</strong> {{ found_game.developer|default_if_none:"N/A" }}</p>
+        </div>
+        {% if found_game.cover_image %}
+            <img src="{{ found_game.cover_image.url }}" alt="{{ found_game.name }}">
+        {% else %}
+            <p class="no-image">No cover image available.</p>
+        {% endif %}
+    </div>
+    <div class="review-section">
+        {% if user.is_authenticated %}
+            <a href="{% url 'review_create' game_id=found_game.pk %}" class="add-review-button">Add Review</a>
+        {% endif %}
+        {% for review_with_comments in reviews_with_comments %}
+            <div>
+                <p><strong>{{ review_with_comments.review.user.username }}</strong>: {{ review_with_comments.review.rating }}/5</p>
+                <p>{{ review_with_comments.review.content }}</p>
+                {% if user.is_authenticated and user == review_with_comments.review.user %}
+                    <a href="{% url 'review_edit' review_with_comments.review.pk %}" class="review-action">Edit</a>
+                    <a href="{% url 'review_delete' review_with_comments.review.pk %}" class="review-action">Delete</a>
+                {% endif %}
+                <h3>Comments</h3>
+                <div class="comment-section">
+                    {% for comment in review_with_comments.comments %}
+                        {% include 'comment/comment_tree.html' with comment=comment level=0 %}
+                    {% endfor %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'comment_create' review_id=review_with_comments.review.pk %}">Add Comment</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

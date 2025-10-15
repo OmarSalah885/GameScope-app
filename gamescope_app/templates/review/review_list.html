@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}All Reviews{% endblock %}
+
+{% block content %}
+    <h1>All Reviews</h1>
+    <ul>
+        {% for review in all_reviews %}
+            <li>
+                <a href="{% url 'review_detail' review.pk %}">{{ review.game.name }} - Rating: {{ review.rating }}/5 by {{ review.user.username }}</a>
+            </li>
+        {% empty %}
+            <li>No reviews found.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

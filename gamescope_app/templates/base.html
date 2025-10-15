@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Game Scope{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block head %}
+    {% endblock head %}
+</head>
+<body>
+    <header>
+        <h1><a href="{% url 'home' %}">Game Scope</a></h1>
+        
+        <nav>
+            <form method="get" action="{% url 'game_list' %}" class="header-search">
+            <input type="text" name="search" placeholder="Search games..." value="{{ current_search }}">   
+                <button type="submit">Search</button>
+            </form>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'game_list' %}">All Games</a>
+            <a href="{% url 'home' %}#about">About</a>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Sign Up</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock content %}
+    </main>
+    <footer>
+        <p>&copy; 2025 Game Scope. All rights reserved.</p>
+    </footer>
+</body>
+</html>

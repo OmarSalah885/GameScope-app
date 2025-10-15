@@ -12,8 +12,12 @@ class Game(models.Model):
     rating_average = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     tags = models.TextField(null=True, blank=True)
     developer = models.CharField(max_length=100, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)   # set once when created
-    updated_at = models.DateTimeField(auto_now=True)       # updated on every save
+    cover_image = models.ImageField(upload_to='games/covers/', null=True, blank=True, help_text='Upload a cover image for the game (e.g., poster).')
+    created_at = models.DateTimeField(auto_now_add=True)   
+    updated_at = models.DateTimeField(auto_now=True)   
+    
+    def __str__(self):
+        return self.name
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -22,10 +26,17 @@ class Review(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s review of {self.game.name} ({self.rating}/5)"
 
 class Comment(models.Model):
-    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.review.game.name}"

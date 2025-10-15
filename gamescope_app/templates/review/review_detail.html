@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Detail{% endblock %}
+
+{% block content %}
+    <h1>Review for {{ found_review.game.name }}</h1>
+    <p><strong>User:</strong> {{ found_review.user.username }}</p>
+    <p><strong>Rating:</strong> {{ found_review.rating }}/5</p>
+    <p><strong>Content:</strong> {{ found_review.content }}</p>
+    <p><strong>Created:</strong> {{ found_review.created_at }}</p>
+    {% if user == found_review.user %}
+        <a href="{% url 'review_edit' found_review.pk %}">Edit</a>
+        <a href="{% url 'review_delete' found_review.pk %}">Delete</a>
+    {% endif %}
+{% endblock %}

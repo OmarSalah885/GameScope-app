@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if comment %}Edit{% else %}Add{% endif %} Comment{% endblock %}
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock head %}
+
+{% block content %}
+    <div class="form-container">
+        <div class="form-card">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <h1>
+                {% if comment %}
+                    Edit Comment
+                {% elif parent_comment %}
+                    Add Reply to {{ parent_comment.user.username }}'s Comment
+                {% else %}
+                    Add Comment on Review for {{ review.game.name }}
+                {% endif %}
+            </h1>
+            <form method="post">
+                {% csrf_token %}
+                {% if parent_comment %}
+                    <input type="hidden" name="parent_id" value="{{ parent_comment.pk }}">
+                {% endif %}
+                {{ form.as_p }}
+                <button type="submit">Save</button>
+            </form>
+            <a href="{% url 'game_detail' pk=review.game.pk %}">Cancel</a>
+        </div>
+    </div>
+{% endblock %}

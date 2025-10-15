@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}All Games{% endblock title %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/games.css' %}">
+{% endblock head %}
+
+{% block content %}
+<h1 class="section-header">All Games</h1>
+
+<!-- Search & Filter Form -->
+<div class="filters-container">
+    <form method="get" class="filters-form">
+        <input type="text" name="search" placeholder="Search games..." value="{{ current_search }}" class="filter-input">
+        <select name="genre" class="filter-select">
+            <option value="">All Genres</option>
+            {% for g in genre_list %}
+                <option value="{{ g }}" {% if current_genre == g %}selected{% endif %}>{{ g }}</option>
+            {% endfor %}
+        </select>
+        <select name="platform" class="filter-select">
+            <option value="">All Platforms</option>
+            {% for p in platform_list %}
+                <option value="{{ p }}" {% if current_platform == p %}selected{% endif %}>{{ p }}</option>
+            {% endfor %}
+        </select>
+        <select name="sort" class="filter-select">
+            {% for key, label in valid_sort_fields.items %}
+                <option value="{{ key }}" {% if current_sort == key %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="filter-button">Apply</button>
+    </form>
+</div>
+
+<hr>
+
+<!-- Game List -->
+<div class="game-list-container">
+    {% for game in all_games %}
+        <div class="game-card">
+            {% if game.cover_image %}
+                <img src="{{ game.cover_image.url }}" alt="{{ game.name }}" class="game-image">
+            {% else %}
+                <div class="game-image-placeholder">[No Image]</div>
+            {% endif %}
+            <div class="game-info">
+                <a href="{% url 'game_detail' game.id %}">{{ game.name }}</a>
+                <p>Rating: ⭐ {{ game.rating_average|default:"N/A" }}</p>
+                <p>Platform: {{ game.platform }}</p>
+                <p>Release: {{ game.release_date|date:"Y-m-d"|default:"TBA" }}</p>
+            </div>
+        </div>
+    {% empty %}
+        <p class="no-results">No games found.</p>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+    {% if all_games.has_previous %}
+        <a href="?page={{ all_games.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}" class="pagination-link">Previous</a>
+    {% endif %}
+    <span class="pagination-info">Page {{ all_games.number }} of {{ all_games.paginator.num_pages }}</span>
+    {% if all_games.has_next %}
+        <a href="?page={{ all_games.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}" class="pagination-link">Next</a>
+    {% endif %}
+</div>
+
+{% endblock content %}
