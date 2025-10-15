@@ -1,15 +1,17 @@
 from django.apps import AppConfig
 from django.contrib.auth import get_user_model
 from datetime import date
-from .models import Game
 
 class GamescopeAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'gamescope_app'
 
     def ready(self):
-        import os
+        from django.conf import settings
         User = get_user_model()
+        
+        # Import models here to avoid AppRegistryNotReady
+        from .models import Game
 
         # --- Create superuser if it doesn't exist ---
         if not User.objects.filter(username="admin").exists():
