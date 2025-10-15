@@ -22,15 +22,15 @@ GameScope is a web-based platform designed to let users explore detailed game in
 ## 📸 Screenshots/Logo
 
 ### 🖥️ Home Page  
-![Home Page Screenshot](./static/images/home1.png)
+![Home Page Screenshot](.gamescope_app/static/images/home1.png)
 
 
 ### ✍️ Game Details Page  
-![Game Details Screenshot](./static/images/game_details.png)
+![Game Details Screenshot](.gamescope_app/static/images/game_details.png)
 
 
 ### 🔍 Search in Action  
-![Search Screenshot](./static/images/search.png)
+![Search Screenshot](.gamescope_app/static/images/search.png)
 
 
 
