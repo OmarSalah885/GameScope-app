@@ -143,7 +143,7 @@ MEDIA_ROOT = BASE_DIR / 'media'  # Where uploaded files are stored (e.g., projec
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
-
+# SECURE_SSL_REDIRECT = True
 from django.contrib.messages import constants as messages
 
 MESSAGE_TAGS = {

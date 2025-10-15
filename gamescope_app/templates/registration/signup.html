@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-        Sign Up
+    Sign Up
 {% endblock title %}
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/registration.css' %}">
@@ -18,38 +18,44 @@
         {% endif %}
 
         <h2>Create an Account</h2>
-        <form method="post">
+        <form method="post" action="{% url 'signup' %}">
             {% csrf_token %}
-            
+            {% if form.non_field_errors %}
+                <div class="form-error" role="alert">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if form.errors %}
+                <div class="form-error" role="alert">
+                    <p>Please correct the errors below.</p>
+                </div>
+            {% endif %}
             <div class="form-group">
                 {{ form.username.label_tag }}
-                {{ form.username }}
+                <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" aria-describedby="username-error" />
                 {% if form.username.errors %}
-                    <div class="error">{{ form.username.errors }}</div>
+                    <div id="username-error" class="form-error" role="alert">{{ form.username.errors }}</div>
                 {% endif %}
             </div>
-
             <div class="form-group">
                 {{ form.password1.label_tag }}
-                {{ form.password1 }}
+                <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" aria-describedby="password1-error" />
                 {% if form.password1.errors %}
-                    <div class="error">{{ form.password1.errors }}</div>
+                    <div id="password1-error" class="form-error" role="alert">{{ form.password1.errors }}</div>
                 {% endif %}
             </div>
-
             <div class="form-group">
                 {{ form.password2.label_tag }}
-                {{ form.password2 }}
+                <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" aria-describedby="password2-error" />
                 {% if form.password2.errors %}
-                    <div class="error">{{ form.password2.errors }}</div>
+                    <div id="password2-error" class="form-error" role="alert">{{ form.password2.errors }}</div>
                 {% endif %}
             </div>
-
             <button type="submit">Sign Up</button>
         </form>
-
         <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
     </div>
 </div>
-
 {% endblock %}

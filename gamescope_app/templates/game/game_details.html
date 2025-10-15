@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <h1>{{ found_game.name }}</h1>
     {% if found_game.cover_image %}
         <img src="{{ found_game.cover_image.url }}" alt="{{ found_game.name }}" style="max-width: 300px;">

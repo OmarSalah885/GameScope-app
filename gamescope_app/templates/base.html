@@ -6,45 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Game Scope{% endblock title %}</title>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-
     {% block head %}
-
     {% endblock head %}
 </head>
-
 <body>
     <header>
-    <h1><a href="{% url 'home' %}">Game Scope</a></h1>
-    <nav>
-        <a href="{% url 'home' %}">Home</a>
-        <a href="{% url 'game_list' %}">All Games</a>
-        <a href="{% url 'home' %}#about">About</a>
-        {% if user.is_authenticated %}
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
-        {% else %}
-        <a href="{% url 'login' %}">Login</a> |
-        <a href="{% url 'signup' %}">Sign Up</a>
-        {% endif %}
-    </nav>
-</header>
-
-
-
+        <h1><a href="{% url 'home' %}">Game Scope</a></h1>
+        <nav>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'game_list' %}">All Games</a>
+            <a href="{% url 'home' %}#about">About</a>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}">Login</a> |
+            <a href="{% url 'signup' %}">Sign Up</a>
+            {% endif %}
+        </nav>
+    </header>
     <main>
-        {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
         {% block content %}
         {% endblock content %}
     </main>
-
     <footer>
         <p>&copy; 2025 Game Scope. All rights reserved.</p>
     </footer>
