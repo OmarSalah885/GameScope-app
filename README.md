@@ -73,7 +73,7 @@ Below is the ERD showing the relationships between models in GameScope.
 ---
 
 ## 🚀 Getting Started
-- **Deployed App**: [Visit GameScope Live]() *(Replace with your deployed URL)*  
+- **Deployed App**: [Visit GameScope Live](https://gamescope-mbhm.onrender.com) *(Replace with your deployed URL)*  
 
 ---
 
