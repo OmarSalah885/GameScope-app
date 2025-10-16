@@ -47,6 +47,21 @@ GameScope is a web-based platform designed to let users explore detailed game in
 
 ---
 
+## 🗂️ Database Design
+Below is the ERD showing the relationships between models in GameScope.
+
+![ERD Diagram](./gamescope_app/static/images/ERD.png)
+
+---
+
+## ⚙️ Installation
+1. Clone the repository
+2. Install dependencies
+3. Run migrations
+4. Start the development server
+
+---
+
 ## 📝 User Stories
 - **View games:** As a user, I want to view a list of available games so that I can choose which game to explore or review.  
 - **Search games:** As a user, I want to search for a specific game by name or genre so that I can quickly find the game I’m interested in.  
@@ -58,7 +73,7 @@ GameScope is a web-based platform designed to let users explore detailed game in
 ---
 
 ## 🚀 Getting Started
-- **Deployed App**: [Visit GameScope Live](https://example.com/gamescope) *(Replace with your deployed URL)*  
+- **Deployed App**: [Visit GameScope Live]() *(Replace with your deployed URL)*  
 
 ---
 
