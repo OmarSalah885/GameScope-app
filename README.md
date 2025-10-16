@@ -76,6 +76,34 @@ Below is the ERD showing the relationships between models in GameScope.
 - **Deployed App**: [Visit GameScope Live](https://gamescope-mbhm.onrender.com) *(Replace with your deployed URL)*  
 
 ---
+## 🧠 Summary of Challenges Encountered and Solutions Applied
+
+### 1. Pagination of Game Listings
+**Challenge:**  
+When displaying a large number of games, loading them all at once made the page slow and cluttered. Implementing pagination was necessary to improve performance and user experience.  
+
+**Solution:**  
+Used Django’s built-in `Paginator` class to split the game list into pages. Adjusted the template logic to handle page navigation smoothly and styled the pagination controls for a clean, user-friendly layout.  
+
+---
+
+### 2. Database Reset After Deployment
+**Challenge:**  
+After deploying to Render, all data disappeared because Render’s free PostgreSQL instance resets data on rebuilds or restarts. This caused the loss of the admin user and game entries.  
+
+**Solution:**  
+Implemented automatic data seeding in the app’s `apps.py` file to recreate the superuser and repopulate the database with default game data whenever the application is deployed.  
+
+---
+
+### 3. Dynamic Superuser and Game Data Creation
+**Challenge:**  
+Render’s free plan doesn’t allow shell access, preventing the creation of a superuser or running management commands after deployment.  
+
+**Solution:**  
+Moved the logic to automatically create a superuser and populate game data into the `ready()` method of `apps.py`, ensuring these are created programmatically on app startup without requiring shell commands.  
+
+---
 
 ## 🙌 Attributions
 - Django documentation – framework and class-based views reference  
